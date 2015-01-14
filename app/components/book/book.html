@@ -1,0 +1,8 @@
+<h2>{{bookCtrl.book.title}}</h2>
+
+Chapters:
+<ul>
+  <li ng-repeat="chapter in bookCtrl.book.chapters">
+    <a href="books/{{bookCtrl.book.slug}}/chapters/{{$index}}">{{chapter.title}}</a>
+  </li>
+</ul>

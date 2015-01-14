@@ -1,0 +1,25 @@
+#IntelliJ project settings
+.idea
+*.iml
+
+# node packages
+node_modules
+
+# bower packages
+bower_components
+
+# distribution file (after calling `grunt build`)
+dist
+
+# documentation (after calling `grunt ngdocs`)
+docs
+
+# temporary files produced during build
+.tmp
+
+# temporary testing folders
+test-results
+coverage
+
+# temporary editor files
+*~
