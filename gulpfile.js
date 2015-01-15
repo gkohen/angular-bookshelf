@@ -29,6 +29,10 @@ var gulpOpen = require('gulp-open');
 // unit testing
 var karma = require('karma').server;
 
+// e2e testing
+var protractor = require('gulp-protractor').protractor;
+var exit = require('gulp-exit');
+
 //var gutil = require('gulp-util');
 //var gulpif = require('gulp-if');
 //var ngConstant = require('gulp-ng-constant');
@@ -38,7 +42,6 @@ var karma = require('karma').server;
 //var imagemin = require('gulp-imagemin');
 //var flatten = require('gulp-flatten');
 //var preprocess = require('gulp-preprocess');
-//var protractor = require('gulp-protractor').protractor;
 //var jshint = require('gulp-jshint');
 //var extend = require('extend');
 
@@ -58,7 +61,7 @@ var app = {
   js: [
     bases.app + 'components/app.js',
     bases.app + 'components/**/*.js',
-    //'!' + bases.app + 'components/**/*_test.js'
+    '!' + bases.app + 'components/**/*_test.js'
   ],
   cssAll: [bases.app + 'components/**/*.css'],
   index: bases.app + 'index.html',
@@ -246,6 +249,30 @@ gulp.task('karma:all', ['karma:appSetup'], function (done) {
   });
 });
 
+// e2e Test
+//
+// setup app for testing
+gulp.task('protractor:appSetup', ['build', 'connect'], function (done) {
+  done();
+});
+// run e2e tests once
+gulp.task('protractor:singleRun', ['protractor:appSetup'], function (done) {
+  gulp.src(['e2e/**/*.js'])
+    .pipe(protractor({
+      configFile: 'protractor.conf.js'
+    })).on('error', function (e) {
+      console.log(e);
+      done();
+    }).on('end', done);
+});
+// clean up after e2e tests
+gulp.task('protractor:tearDown', ['protractor:singleRun'], function () {
+  gulp.src(bases.dist)
+    .pipe(connect.serverClose());
+  gulp.src(bases.dist)
+    .pipe(exit());
+});
+
 ///////////////////////////////////////////////
 ///             TASKS FOR USER              ///
 ///////////////////////////////////////////////
@@ -264,3 +291,6 @@ gulp.task('test:all', ['karma:appSetup', 'karma:all']);
 
 // 'gulp test:watch' run unit tests every time a file changes
 gulp.task('test:watch', ['karma:appSetup', 'karma:watch']);
+
+// 'gulp e2e' run e2e tests once
+gulp.task('e2e', ['protractor:appSetup', 'protractor:singleRun', 'protractor:tearDown']);
