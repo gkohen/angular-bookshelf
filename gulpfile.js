@@ -12,14 +12,17 @@ var ngAnnotate = require('gulp-ng-annotate');
 var gulpInject = require('gulp-inject');
 var bowerFiles = require('main-bower-files');
 
+// html
+var ngHtml2Js = require('gulp-ng-html2js');
+var minifyHtml = require('gulp-minify-html');
+
+// css
+var minifyCSS = require('gulp-minify-css');
+
 // caching
 var newer = require('gulp-newer');
 var cached = require('gulp-cached');
 var remember = require('gulp-remember');
-
-// html
-var ngHtml2Js = require('gulp-ng-html2js');
-var minifyHtml = require('gulp-minify-html');
 
 // serving
 var connect = require('gulp-connect');
@@ -38,7 +41,6 @@ var exit = require('gulp-exit');
 //var ngConstant = require('gulp-ng-constant');
 //var ngFilesort = require('gulp-angular-filesort');
 //var compass = require('gulp-compass');
-//var minifyCSS = require('gulp-minify-css');
 //var imagemin = require('gulp-imagemin');
 //var flatten = require('gulp-flatten');
 //var preprocess = require('gulp-preprocess');
@@ -63,7 +65,7 @@ var app = {
     bases.app + 'components/**/*.js',
     '!' + bases.app + 'components/**/*_test.js'
   ],
-  cssAll: [bases.app + 'components/**/*.css'],
+  css: [bases.app + 'components/**/*.css'],
   index: bases.app + 'index.html',
   images: bases.app + 'components/**/*.{png,jpg,jpeg,gif,svg,ico}',
   templates: bases.app + 'components/**/*.html',
@@ -74,6 +76,7 @@ var dist = {
   js: bases.dist + 'js/',
   jsFiles: ['js/vendor.js', 'js/templates.js', 'js/scripts.js'],
   css: bases.dist + 'css/',
+  cssFiles: ['css/vendor.css', 'css/style.css'],
   images: bases.dist + 'images/'
 };
 
@@ -143,9 +146,39 @@ gulp.task('templates', function () {
     .pipe(gulp.dest(dist.js));
 });
 
+gulp.task('vendorStyles', function () {
+  var vendorFile = 'vendor.css';
+
+  return gulp.src(bowerFiles({
+    filter: /\.css$/i
+  }))
+    .pipe(sourcemaps.init())
+    .pipe(newer(dist.css + vendorFile))
+    .pipe(concat(vendorFile))
+    .pipe(minifyCSS({
+      keepSpecialComments: 0
+    }))
+    .pipe(sourcemaps.write())
+    .pipe(gulp.dest(dist.css));
+});
+
+gulp.task('styles', function () {
+  var stylesFile = 'style.css';
+
+  return gulp.src(app.css)
+    .pipe(sourcemaps.init())
+    .pipe(newer(dist.css + stylesFile))
+    .pipe(concat(stylesFile))
+    .pipe(minifyCSS({
+      keepSpecialComments: 0
+    }))
+    .pipe(sourcemaps.write())
+    .pipe(gulp.dest(dist.css));
+});
+
 // INJECT FILES IN INDEX
 //
-gulp.task('injectIndex', ['scripts', 'vendorScripts', 'templates'], function () {
+gulp.task('injectIndex', ['scripts', 'vendorScripts', 'styles', 'vendorStyles', 'templates'], function () {
   var destinationDir = bases.dist;
   var srcOptions = {
     cwd: destinationDir,
@@ -158,7 +191,7 @@ gulp.task('injectIndex', ['scripts', 'vendorScripts', 'templates'], function () 
     ignorePath: '../' + destinationDir
   };
   return gulp.src(app.index)
-    //.pipe(gulpInject(gulp.src(['css/vendor.css', 'css/style.css'], srcOptions), injectOptions))
+    .pipe(gulpInject(gulp.src(dist.cssFiles, srcOptions), injectOptions))
     .pipe(gulpInject(gulp.src(dist.jsFiles, srcOptions), injectOptions))
     .pipe(gulp.dest(destinationDir));
 });
@@ -278,7 +311,7 @@ gulp.task('protractor:tearDown', ['protractor:singleRun'], function () {
 ///////////////////////////////////////////////
 
 // 'gulp build' create all files required for deploy
-gulp.task('build', ['scripts', 'vendorScripts', 'templates', 'injectIndex']);
+gulp.task('build', ['scripts', 'vendorScripts', 'templates', 'styles', 'vendorStyles', 'injectIndex']);
 
 // 'gulp' start a local server
 gulp.task('default', ['build', 'watch', 'connect', 'open']);
