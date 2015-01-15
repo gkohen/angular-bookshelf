@@ -26,6 +26,8 @@ var connect = require('gulp-connect');
 var historyApiFallback = require('connect-history-api-fallback');
 var gulpOpen = require('gulp-open');
 
+// unit testing
+var karma = require('karma').server;
 
 //var gutil = require('gulp-util');
 //var gulpif = require('gulp-if');
@@ -208,6 +210,41 @@ gulp.task('watch', ['build'], function () {
 ///                TEST APP                 ///
 ///////////////////////////////////////////////
 
+// Unit Test
+//
+// setup app for testing
+gulp.task('karma:appSetup', ['templates', 'vendorScripts'], function (done) {
+  done();
+});
+// run tests once
+gulp.task('karma:singleRun', ['karma:appSetup'], function (done) {
+  karma.start({
+    configFile: __dirname + '/karma.conf.js',
+    singleRun: true
+  }, function() {
+    done();
+  });
+});
+// run tests when files change
+gulp.task('karma:watch', ['karma:appSetup'], function (done) {
+  karma.start({
+    configFile: __dirname + '/karma.conf.js',
+    singleRun: false,
+    autoWatch: true
+  }, function() {
+    done();
+  });
+});
+// run tests in multiple browsers
+gulp.task('karma:all', ['karma:appSetup'], function (done) {
+  karma.start({
+    configFile: __dirname + '/karma.conf.js',
+    browsers: ['PhantomJS', 'Firefox', 'Chrome'],
+    singleRun: true
+  }, function() {
+    done();
+  });
+});
 
 ///////////////////////////////////////////////
 ///             TASKS FOR USER              ///
@@ -218,3 +255,12 @@ gulp.task('build', ['scripts', 'vendorScripts', 'templates', 'injectIndex']);
 
 // 'gulp' start a local server
 gulp.task('default', ['build', 'watch', 'connect', 'open']);
+
+// 'gulp test' run unit tests once
+gulp.task('test', ['karma:appSetup', 'karma:singleRun']);
+
+// 'gulp test:all' run unit tests in multiple browsers
+gulp.task('test:all', ['karma:appSetup', 'karma:all']);
+
+// 'gulp test:watch' run unit tests every time a file changes
+gulp.task('test:watch', ['karma:appSetup', 'karma:watch']);
