@@ -146,6 +146,24 @@ gulp.task('templates', function () {
     .pipe(gulp.dest(dist.js));
 });
 
+// CONCAT ALL APPLICATION SPECIFIC STYLES
+//
+gulp.task('styles', function () {
+  var stylesFile = 'style.css';
+
+  return gulp.src(app.css)
+    .pipe(sourcemaps.init())
+    .pipe(newer(dist.css + stylesFile))
+    .pipe(concat(stylesFile))
+    .pipe(minifyCSS({
+      keepSpecialComments: 0
+    }))
+    .pipe(sourcemaps.write())
+    .pipe(gulp.dest(dist.css));
+});
+
+// CONCAT ALL EXTERNAL STYLES
+// 
 gulp.task('vendorStyles', function () {
   var vendorFile = 'vendor.css';
 
@@ -155,20 +173,6 @@ gulp.task('vendorStyles', function () {
     .pipe(sourcemaps.init())
     .pipe(newer(dist.css + vendorFile))
     .pipe(concat(vendorFile))
-    .pipe(minifyCSS({
-      keepSpecialComments: 0
-    }))
-    .pipe(sourcemaps.write())
-    .pipe(gulp.dest(dist.css));
-});
-
-gulp.task('styles', function () {
-  var stylesFile = 'style.css';
-
-  return gulp.src(app.css)
-    .pipe(sourcemaps.init())
-    .pipe(newer(dist.css + stylesFile))
-    .pipe(concat(stylesFile))
     .pipe(minifyCSS({
       keepSpecialComments: 0
     }))
@@ -236,7 +240,7 @@ gulp.task('reload', function () {
 gulp.task('watch', ['build'], function () {
   gulp.watch(app.templates, ['templates']);
   gulp.watch(app.images, ['images']);
-  gulp.watch(app.cssAll, ['styles']);
+  gulp.watch(app.css, ['styles']);
   gulp.watch(app.js, ['scripts']);
   // watch any change in dist folder; reload immediately in case of detected change
   gulp.watch(bases.dist + '**', ['reload']);
