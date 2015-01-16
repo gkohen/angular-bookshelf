@@ -148,7 +148,7 @@ exports.config = {
   // You can specify a file containing code to run by setting beforeLaunch to
   // the filename string.
   beforeLaunch: function () {
-    // At this point, global variable 'protractor' object will NOT be set up, 
+    // At this point, global variable 'protractor' object will NOT be set up,
     // and globals from the test framework will NOT be available. The main
     // purpose of this function should be to bring up test dependencies.
   },
@@ -176,7 +176,7 @@ exports.config = {
   // A callback function called once the tests have finished running and
   // the WebDriver instance has been shut down. It is passed the exit code
   // (0 if the tests passed). This is called once per capability.
-  onCleanUp: function (exitCode) {},
+  onCleanUp: function () {},
 
   // A callback function called once all tests have finished running and
   // the WebDriver instance has been shut down. It is passed the exit code
@@ -190,6 +190,7 @@ exports.config = {
   // This can be changed via the command line as:
   //   --params.login.user 'Joe'
   params: {
+    baseUrl: 'http://localhost:8000',
     // login: {
     //   user: 'Jane',
     //   password: '1234'

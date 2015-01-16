@@ -1,4 +1,5 @@
 (function() {
+
   'use strict';
 
   angular
@@ -7,7 +8,6 @@
 
   /* @ngInject */
   function BookChapterController($routeParams, BookService) {
-    /*jshint validthis: true */
     var vm = this;
     vm.book = {};
     vm.chapter = {};

@@ -1,7 +1,7 @@
 'use strict';
 
-/*global element, by, browser*/
 var HomePage = (function() {
+
   function HomePage() {
     this.books = element.all(by.repeater('book in homeCtrl.books'));
   }

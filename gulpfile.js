@@ -36,6 +36,9 @@ var karma = require('karma').server;
 var protractor = require('gulp-protractor').protractor;
 var exit = require('gulp-exit');
 
+// code quality
+var jshint = require('gulp-jshint');
+
 //var gutil = require('gulp-util');
 //var gulpif = require('gulp-if');
 //var ngConstant = require('gulp-ng-constant');
@@ -44,7 +47,6 @@ var exit = require('gulp-exit');
 //var imagemin = require('gulp-imagemin');
 //var flatten = require('gulp-flatten');
 //var preprocess = require('gulp-preprocess');
-//var jshint = require('gulp-jshint');
 //var extend = require('extend');
 
 
@@ -69,7 +71,12 @@ var app = {
   index: bases.app + 'index.html',
   images: bases.app + 'components/**/*.{png,jpg,jpeg,gif,svg,ico}',
   templates: bases.app + 'components/**/*.html',
-  statics: ['app/.htaccess', 'app/favicon.ico', 'app/robots.txt']
+  statics: ['app/.htaccess', 'app/favicon.ico', 'app/robots.txt'],
+  jshint: [
+    bases.app + 'components/**/*.js',
+    'e2e/**/*.js',
+    '*.js'
+  ]
 };
 
 var dist = {
@@ -91,7 +98,7 @@ var port = 8000;
 ///////////////////////////////////////////////
 
 // CONCAT ALL APPLICATION SPECIFIC SCRIPTS
-// 
+//
 gulp.task('scripts', function () {
   var scriptsFile = 'scripts.js';
 
@@ -110,7 +117,7 @@ gulp.task('scripts', function () {
 });
 
 // CONCAT ALL EXTERNAL SCRIPTS
-// 
+//
 gulp.task('vendorScripts', function () {
   var vendorFile = 'vendor.js';
 
@@ -163,7 +170,7 @@ gulp.task('styles', function () {
 });
 
 // CONCAT ALL EXTERNAL STYLES
-// 
+//
 gulp.task('vendorStyles', function () {
   var vendorFile = 'vendor.css';
 
@@ -308,6 +315,19 @@ gulp.task('protractor:tearDown', ['protractor:singleRun'], function () {
     .pipe(connect.serverClose());
   gulp.src(bases.dist)
     .pipe(exit());
+});
+
+
+///////////////////////////////////////////////
+///              CODE QUALITY               ///
+///////////////////////////////////////////////
+
+// checks if the code follows the defined coding conventions
+//
+gulp.task('jshint', function () {
+  return gulp.src(app.jshint)
+    .pipe(jshint('.jshintrc'))
+    .pipe(jshint.reporter('jshint-stylish'));
 });
 
 ///////////////////////////////////////////////

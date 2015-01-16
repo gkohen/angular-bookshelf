@@ -1,4 +1,5 @@
 (function() {
+
   'use strict';
 
   angular
@@ -7,14 +8,13 @@
 
   /* @ngInject */
   function HomeController(BookService) {
-    /*jshint validthis: true */
     var vm = this;
     vm.books = {};
 
     activate();
 
     ////////////////
-    
+
     function activate() {
       vm.books = BookService.getAll();
     }

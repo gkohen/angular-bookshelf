@@ -24,7 +24,7 @@
         })
 
         // if no case matches redirect to home
-        .otherwise('/')
+        .otherwise('/');
 
       // generate URLs without '#'
       $locationProvider.html5Mode(true);

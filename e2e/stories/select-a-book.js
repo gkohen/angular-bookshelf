@@ -1,8 +1,5 @@
 'use strict';
 
-/*global element, by, browser*/
-var root = 'http://localhost:8000';
-
 var HomePage = require('../pages/home-page');
 
 describe('angular-bookshelf - ', function () {
@@ -18,7 +15,7 @@ describe('angular-bookshelf - ', function () {
 
     it('should automatically redirect to "/".', function () {
       expect(browser.getTitle()).toEqual('Bookshelf');
-      expect(browser.getCurrentUrl()).toEqual(root + '/');
+      expect(browser.getCurrentUrl()).toEqual(browser.params.baseUrl + '/');
     });
 
     it('should show two books.', function () {
@@ -27,7 +24,7 @@ describe('angular-bookshelf - ', function () {
 
     it('should redirect when selecting book.', function() {
       homePage.selectBook(1);
-      expect(browser.getCurrentUrl()).toEqual(root + '/books/java');
+      expect(browser.getCurrentUrl()).toEqual(browser.params.baseUrl + '/books/java');
     });
 
   });

@@ -48,7 +48,7 @@ describe('Service: BookService', function() {
 
   });
 
-  
+
   // getBySlug()
   describe('. getBySlug() ', function() {
 
